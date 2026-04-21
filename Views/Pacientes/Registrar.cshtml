@@ -1,0 +1,54 @@
+@model ClinicaVeterinaria.Models.Paciente
+
+<h2>Registrar Paciente 🐶</h2>
+
+<form asp-action="Registrar" method="post">
+
+    <div>
+        <label>Nombre:</label><br />
+        <input asp-for="Nombre" />
+        <span asp-validation-for="Nombre" style="color:red"></span>
+    </div>
+
+    <br />
+
+    <div>
+        <label>Especie:</label><br />
+        <input asp-for="Especie" />
+        <span asp-validation-for="Especie" style="color:red"></span>
+    </div>
+
+    <br />
+
+    <div>
+        <label>Raza:</label><br />
+        <input asp-for="Raza" />
+    </div>
+
+    <br />
+
+    <div>
+        <label>Edad:</label><br />
+        <input asp-for="Edad" type="number" />
+        <span asp-validation-for="Edad" style="color:red"></span>
+    </div>
+
+    <br />
+
+    <div>
+        <label>Propietario:</label><br />
+        <input asp-for="Propietario" />
+    </div>
+
+    <br />
+
+    <button type="submit">Guardar</button>
+</form>
+
+<br />
+
+<a href="/Pacientes">Volver</a>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

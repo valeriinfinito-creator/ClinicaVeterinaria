@@ -1,0 +1,61 @@
+@model List<ClinicaVeterinaria.Models.Paciente>
+
+<h2>Clínica Veterinaria 🐾</h2>
+
+<a href="/Pacientes/Registrar" class="btn btn-primary">Registrar Paciente</a>
+<br /><br />
+
+<a href="/Pacientes/Procesos" class="btn btn-secondary">Simular Procesos</a>
+<a href="/Pacientes/Comparar" class="btn btn-warning">Comparar Tareas</a>
+<a href="/Pacientes/Multiples" class="btn btn-success">Registrar Múltiples</a>
+
+<br /><br />
+
+@if (TempData["Mensaje"] != null)
+{
+    <div style="color: green;">
+        @TempData["Mensaje"]
+    </div>
+}
+
+@if (ViewBag.Resultado != null)
+{
+    <div style="color: blue;">
+        <strong>Resultado:</strong> @ViewBag.Resultado
+    </div>
+}
+
+<h3>Lista de Pacientes</h3>
+
+<table border="1" cellpadding="10">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Especie</th>
+            <th>Raza</th>
+            <th>Edad</th>
+            <th>Propietario</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var paciente in Model)
+            {
+                <tr>
+                    <td>@paciente.Nombre</td>
+                    <td>@paciente.Especie</td>
+                    <td>@paciente.Raza</td>
+                    <td>@paciente.Edad</td>
+                    <td>@paciente.Propietario</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">No hay pacientes registrados</td>
+            </tr>
+        }
+    </tbody>
+</table>
