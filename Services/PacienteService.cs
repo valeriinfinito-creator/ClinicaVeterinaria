@@ -13,23 +13,32 @@ namespace ClinicaVeterinaria.Services
             _context = context;
         }
 
-        // Registrar paciente en base de datos (ASYNC)
+        // Método asíncrono para registrar un paciente en la base de datos
+        // Se utiliza async/await para evitar bloquear el hilo principal
         public async Task<string> RegistrarPacienteAsync(Paciente paciente)
         {
-            // Se usa async para no bloquear mientras se guarda en BD
+            Console.WriteLine("Iniciando registro de paciente...");
+
+            // Simulación de proceso lento (ej: conexión a base de datos)
+            await Task.Delay(1000);
+
             await _context.Pacientes.AddAsync(paciente);
             await _context.SaveChangesAsync();
 
-            return $"Paciente {paciente.Nombre} registrado correctamente";
+            Console.WriteLine("Paciente registrado correctamente");
+
+            return $"Paciente {paciente.Nombre} registrado";
         }
 
-        // Obtener lista de pacientes (ASYNC)
+        // Método asíncrono para obtener todos los pacientes
+        // Mejora la eficiencia al no bloquear mientras se consulta la BD
         public async Task<List<Paciente>> ObtenerPacientesAsync()
         {
             return await _context.Pacientes.ToListAsync();
         }
 
-        // Simulación de procesos en paralelo
+        // Simulación de procesos en paralelo dentro de la clínica
+        // Se usan tareas independientes que no afectan la base de datos
         public async Task<string> ProcesosClinicaAsync()
         {
             var historialTask = Task.Run(async () =>
@@ -50,60 +59,59 @@ namespace ClinicaVeterinaria.Services
                 return "Notificación enviada";
             });
 
+            // Task.WhenAll permite ejecutar múltiples tareas en paralelo
             var resultados = await Task.WhenAll(historialTask, citaTask, notificacionTask);
 
             return string.Join(" | ", resultados);
         }
 
-        // Comparación WhenAll vs WhenAny
+        // Comparación entre Task.WhenAll y Task.WhenAny
         public async Task<string> CompararTareasAsync()
         {
-            var t1 = Task.Run(async () =>
+            var tareaLarga = Task.Run(async () =>
             {
                 await Task.Delay(3000);
                 return "Proceso largo terminado";
             });
 
-            var t2 = Task.Run(async () =>
+            var tareaRapida = Task.Run(async () =>
             {
                 await Task.Delay(1000);
                 return "Proceso rápido terminado";
             });
 
-            var t3 = Task.Run(async () =>
+            var tareaMedia = Task.Run(async () =>
             {
                 await Task.Delay(2000);
                 return "Proceso medio terminado";
             });
 
-            // Espera la primera que termine
-            var primera = await Task.WhenAny(t1, t2, t3);
-
+            // Task.WhenAny devuelve la primera tarea que finaliza
+            var primera = await Task.WhenAny(tareaLarga, tareaRapida, tareaMedia);
             string resultadoPrimero = await primera;
 
-            // Espera todas
-            var todos = await Task.WhenAll(t1, t2, t3);
+            // Task.WhenAll espera que todas las tareas finalicen
+            var todos = await Task.WhenAll(tareaLarga, tareaRapida, tareaMedia);
 
             return $"Primero: {resultadoPrimero} | Todos: {string.Join(", ", todos)}";
         }
 
-        // Registrar múltiples pacientes de forma segura (uno por uno)
-		public async Task<string> RegistrarMultiplesPacientesAsync()
-{
-   		 var pacientes = new List<Paciente>
-    	{
-        	new Paciente { Nombre = "Max", Especie = "Perro", Edad = 3 },
-        	new Paciente { Nombre = "Luna", Especie = "Gato", Edad = 2 },
-        	new Paciente { Nombre = "Rocky", Especie = "Perro", Edad = 5 }
-    	};
+        // Registro de múltiples pacientes
+        public async Task<string> RegistrarMultiplesPacientesAsync()
+        {
+            var pacientes = new List<Paciente>
+            {
+                new Paciente { Nombre = "Max", Especie = "Perro", Edad = 3 },
+                new Paciente { Nombre = "Luna", Especie = "Gato", Edad = 2 },
+                new Paciente { Nombre = "Rocky", Especie = "Perro", Edad = 5 }
+            };
 
-   	 	foreach (var paciente in pacientes)
-    	{
-        // Se guarda uno por uno para evitar conflictos con DbContext
-        await RegistrarPacienteAsync(paciente);
-   		 }
+            foreach (var paciente in pacientes)
+            {
+                await RegistrarPacienteAsync(paciente);
+            }
 
-    	return "Todos los pacientes fueron registrados correctamente";
-}
-}
+            return "Todos los pacientes fueron registrados correctamente";
+        }
+    }
 }
